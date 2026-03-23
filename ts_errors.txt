@@ -1,0 +1,36 @@
+src/controllers/banner.controller.ts(17,60): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/banner.controller.ts(59,62): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/banner.controller.ts(79,14): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/banner.controller.ts(90,62): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/banner.controller.ts(97,41): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/berita.controller.ts(44,14): error TS2322: Type 'string | string[]' is not assignable to type 'string | StringFilter<"Berita"> | undefined'.
+  Type 'string[]' is not assignable to type 'string | StringFilter<"Berita"> | undefined'.
+src/controllers/berita.controller.ts(44,32): error TS2322: Type 'string | string[]' is not assignable to type 'string | StringFilter<"Berita"> | undefined'.
+  Type 'string[]' is not assignable to type 'string | StringFilter<"Berita"> | undefined'.
+src/controllers/berita.controller.ts(95,62): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/berita.controller.ts(119,31): error TS2322: Type '{ id: string | string[]; }' is not assignable to type 'BeritaWhereInput | BeritaWhereInput[] | undefined'.
+  Types of property 'id' are incompatible.
+    Type 'string | string[]' is not assignable to type 'string | StringFilter<"Berita"> | undefined'.
+      Type 'string[]' is not assignable to type 'string | StringFilter<"Berita"> | undefined'.
+src/controllers/berita.controller.ts(125,14): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/berita.controller.ts(142,62): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/berita.controller.ts(149,41): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/pimpinan.controller.ts(14,64): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/pimpinan.controller.ts(56,64): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/pimpinan.controller.ts(76,14): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/pimpinan.controller.ts(92,64): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/pimpinan.controller.ts(99,43): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
