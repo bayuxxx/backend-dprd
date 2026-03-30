@@ -9,8 +9,10 @@ import authRoutes from './routes/auth.routes';
 import bannerRoutes from './routes/banner.routes';
 import beritaRoutes from './routes/berita.routes';
 import pimpinanRoutes from './routes/pimpinan.routes';
+import masaJabatanRoutes from './routes/masaJabatan.routes';
 import youtubeRoutes from './routes/youtube.routes';
 import instagramRoutes from './routes/instagram.routes';
+import sekretariatRoutes from './routes/sekretariat.routes';
 import { errorHandler } from './middleware/error.middleware';
 
 const app = express();
@@ -33,9 +35,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/banners', bannerRoutes);
 app.use('/api/berita', beritaRoutes);
 app.use('/api/pimpinan', pimpinanRoutes);
+app.use('/api/masa-jabatan', masaJabatanRoutes);
 app.use('/api/admins', adminRoutes);
 app.use('/api/youtube', youtubeRoutes);
 app.use('/api/instagram', instagramRoutes);
+app.use('/api/sekretariat', sekretariatRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {

@@ -42,19 +42,63 @@ model Berita {
   @@map("beritas")
 }
 
+model MasaJabatan {
+  id          String     @id @default(cuid())
+  periode     String     @unique  // e.g. "2024-2029"
+  tahunMulai  Int
+  tahunSelesai Int
+  isAktif     Boolean    @default(false)
+  keterangan  String?
+  order       Int        @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  pimpinan    Pimpinan[]
+
+  @@map("masa_jabatan")
+}
+
 model Pimpinan {
+  id            String       @id @default(cuid())
+  name          String
+  position      String
+  faction       String?
+  period        String       @default("2024-2029")
+  masaJabatanId String?
+  masaJabatan   MasaJabatan? @relation(fields: [masaJabatanId], references: [id], onDelete: SetNull)
+  isPast        Boolean      @default(false)
+  imageUrl      String?
+  bio           String?
+  order         Int          @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@map("pimpinan")
+}
+
+model Sekretariat {
   id        String   @id @default(cuid())
-  name      String
-  position  String
-  faction   String?
-  period    String   @default("2024-2029")
-  imageUrl  String?
-  bio       String?
-  order     Int      @default(0)
+  visi      String?
+  misi      String?
+  tugas     String?
+  fungsi    String?  // JSON array stored as text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("pimpinan")
+  @@map("sekretariat")
+}
+
+model AnggotaSekretariat {
+  id           String   @id @default(cuid())
+  name         String
+  position     String
+  unit         String?
+  imageUrl     String?
+  isSekretaris Boolean  @default(false)
+  order        Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("anggota_sekretariat")
 }
 
 model Admin {
