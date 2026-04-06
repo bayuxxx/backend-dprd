@@ -13,6 +13,8 @@ import masaJabatanRoutes from './routes/masaJabatan.routes';
 import youtubeRoutes from './routes/youtube.routes';
 import instagramRoutes from './routes/instagram.routes';
 import sekretariatRoutes from './routes/sekretariat.routes';
+import bamusRoutes from './routes/bamus.routes';
+import bapemperdaRoutes from './routes/bapemperda.routes';
 import { errorHandler } from './middleware/error.middleware';
 
 const app = express();
@@ -40,6 +42,8 @@ app.use('/api/admins', adminRoutes);
 app.use('/api/youtube', youtubeRoutes);
 app.use('/api/instagram', instagramRoutes);
 app.use('/api/sekretariat', sekretariatRoutes);
+app.use('/api/bamus', bamusRoutes);
+app.use('/api/bapemperda', bapemperdaRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {

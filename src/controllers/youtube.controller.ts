@@ -1,17 +1,16 @@
 import { Request, Response } from 'express';
 
-const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
-const YOUTUBE_CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID || 'UCxxxxxxxxxxxxxxxxxxxxxxx';
-
 /**
  * GET /api/youtube/videos
  * Fetch latest videos from DPRD Sumbawa Barat YouTube channel
  */
 export async function getLatestVideos(req: Request, res: Response) {
+  const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
+  const YOUTUBE_CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID || 'UCxxxxxxxxxxxxxxxxxxxxxxx';
   const maxResults = parseInt(req.query.maxResults as string) || 6;
 
   if (!YOUTUBE_API_KEY) {
-    // Return fallback data when no API key is configured
+    console.warn('[YouTube] No YOUTUBE_API_KEY found in env, returning fallback');
     return res.json({
       source: 'fallback',
       items: getFallbackVideos(),
@@ -21,10 +20,17 @@ export async function getLatestVideos(req: Request, res: Response) {
   try {
     // First, get the uploads playlist ID from the channel
     const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${YOUTUBE_CHANNEL_ID}&key=${YOUTUBE_API_KEY}`;
+    console.log(`[YouTube] Fetching channel info for: ${YOUTUBE_CHANNEL_ID}`);
     const channelRes = await fetch(channelUrl);
     const channelData: any = await channelRes.json();
 
+    if (channelData.error) {
+      console.error('[YouTube] Channel API error:', JSON.stringify(channelData.error));
+      return res.json({ source: 'fallback', items: getFallbackVideos() });
+    }
+
     if (!channelData.items || channelData.items.length === 0) {
+      console.warn('[YouTube] No channel found for ID:', YOUTUBE_CHANNEL_ID);
       return res.json({ source: 'fallback', items: getFallbackVideos() });
     }
 
@@ -35,7 +41,13 @@ export async function getLatestVideos(req: Request, res: Response) {
     const playlistRes = await fetch(playlistUrl);
     const playlistData: any = await playlistRes.json();
 
+    if (playlistData.error) {
+      console.error('[YouTube] Playlist API error:', JSON.stringify(playlistData.error));
+      return res.json({ source: 'fallback', items: getFallbackVideos() });
+    }
+
     if (!playlistData.items) {
+      console.warn('[YouTube] No playlist items found');
       return res.json({ source: 'fallback', items: getFallbackVideos() });
     }
 
@@ -73,9 +85,10 @@ export async function getLatestVideos(req: Request, res: Response) {
       };
     });
 
+    console.log(`[YouTube] Successfully fetched ${items.length} videos from API`);
     return res.json({ source: 'api', items });
   } catch (error) {
-    console.error('YouTube API Error:', error);
+    console.error('[YouTube] API Error:', error);
     return res.json({ source: 'fallback', items: getFallbackVideos() });
   }
 }
@@ -85,6 +98,8 @@ export async function getLatestVideos(req: Request, res: Response) {
  * Search videos on the channel
  */
 export async function searchVideos(req: Request, res: Response) {
+  const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
+  const YOUTUBE_CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID || 'UCxxxxxxxxxxxxxxxxxxxxxxx';
   const query = req.query.q as string || '';
   const maxResults = parseInt(req.query.maxResults as string) || 6;
 
@@ -113,7 +128,7 @@ export async function searchVideos(req: Request, res: Response) {
 
     return res.json({ source: 'api', items });
   } catch (error) {
-    console.error('YouTube Search Error:', error);
+    console.error('[YouTube] Search Error:', error);
     return res.json({ source: 'fallback', items: getFallbackVideos() });
   }
 }

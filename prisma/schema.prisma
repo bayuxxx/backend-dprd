@@ -75,6 +75,62 @@ model Pimpinan {
   @@map("pimpinan")
 }
 
+model BamusInfo {
+  id          String   @id @default(cuid())
+  masaJabatan String   @default("2024-2029") // e.g. "2024-2029"
+  deskripsi   String?  // Paragraph description of Bamus
+  isAktif     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  anggota     AnggotaBamus[]
+
+  @@map("bamus_info")
+}
+
+model AnggotaBamus {
+  id          String     @id @default(cuid())
+  name        String
+  jabatan     String     // "Ketua" | "Wakil Ketua" | "Anggota" | "Sekretaris"
+  faction     String?    // e.g. "Fraksi PKS"
+  imageUrl    String?
+  order       Int        @default(0)
+  bamusInfoId String?
+  bamusInfo   BamusInfo? @relation(fields: [bamusInfoId], references: [id], onDelete: SetNull)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("anggota_bamus")
+}
+
+model BapemperdaInfo {
+  id          String   @id @default(cuid())
+  masaJabatan String   @default("2024-2029")
+  deskripsi   String?
+  isAktif     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  anggota     AnggotaBapemperda[]
+
+  @@map("bapemperda_info")
+}
+
+model AnggotaBapemperda {
+  id              String          @id @default(cuid())
+  name            String
+  jabatan         String          // "Ketua" | "Wakil Ketua" | "Anggota" | "Sekretaris"
+  faction         String?
+  imageUrl        String?
+  order           Int             @default(0)
+  bapemperdaInfoId String?
+  bapemperdaInfo  BapemperdaInfo? @relation(fields: [bapemperdaInfoId], references: [id], onDelete: SetNull)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@map("anggota_bapemperda")
+}
+
 model Sekretariat {
   id        String   @id @default(cuid())
   visi      String?
