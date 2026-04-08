@@ -131,6 +131,35 @@ model AnggotaBapemperda {
   @@map("anggota_bapemperda")
 }
 
+model BanggarInfo {
+  id          String   @id @default(cuid())
+  masaJabatan String   @default("2024-2029")
+  deskripsi   String?
+  isAktif     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  anggota     AnggotaBanggar[]
+
+  @@map("banggar_info")
+}
+
+model AnggotaBanggar {
+  id          String       @id @default(cuid())
+  name        String
+  jabatan     String       // "Ketua" | "Wakil Ketua" | "Anggota" | "Sekretaris"
+  faction     String?
+  imageUrl    String?
+  order       Int          @default(0)
+  banggarInfoId String?
+  banggarInfo BanggarInfo? @relation(fields: [banggarInfoId], references: [id], onDelete: SetNull)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@map("anggota_banggar")
+}
+
+
 model Sekretariat {
   id        String   @id @default(cuid())
   visi      String?

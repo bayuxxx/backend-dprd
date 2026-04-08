@@ -13,6 +13,7 @@ import instagramRoutes from './routes/instagram.routes';
 import sekretariatRoutes from './routes/sekretariat.routes';
 import bamusRoutes from './routes/bamus.routes';
 import bapemperdaRoutes from './routes/bapemperda.routes';
+import banggarRoutes from './routes/banggar.routes';
 import { errorHandler } from './middleware/error.middleware';
 
 const app = express();
@@ -42,6 +43,7 @@ app.use('/api/instagram', instagramRoutes);
 app.use('/api/sekretariat', sekretariatRoutes);
 app.use('/api/bamus', bamusRoutes);
 app.use('/api/bapemperda', bapemperdaRoutes);
+app.use('/api/banggar', banggarRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {
