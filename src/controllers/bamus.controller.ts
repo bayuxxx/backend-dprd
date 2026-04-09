@@ -1,16 +1,18 @@
 import { Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import { AuthRequest } from '../middleware/auth.middleware';
-import { uploadToStorage, deleteFromStorage } from '../lib/supabase';
+import { uploadToStorage, deleteFromStorage } from '../lib/storage';
 
 // ══════════════════════════════════════════════
 // BamusInfo (description + masa jabatan)
 // ══════════════════════════════════════════════
 
 /** GET /api/bamus/info — public, returns active bamus info with all members */
-export const getBamusInfo = async (_req: Request, res: Response) => {
+export const getBamusInfo = async (req: Request, res: Response) => {
+  const { id } = req.query;
+  const where = id ? { id: String(id) } : { isAktif: true };
   const info = await prisma.bamusInfo.findFirst({
-    where: { isAktif: true },
+    where,
     include: {
       anggota: { orderBy: { order: 'asc' } },
     },

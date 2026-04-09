@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import { AuthRequest } from '../middleware/auth.middleware';
-import { uploadToStorage, deleteFromStorage } from '../lib/supabase';
+import { uploadToStorage, deleteFromStorage } from '../lib/storage';
 
 export const getBanners = async (req: Request, res: Response) => {
   const { isActive } = req.query;

@@ -2,6 +2,7 @@ import 'dotenv/config';
 import 'express-async-errors';
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
 
 import authRoutes from './routes/auth.routes';
 import bannerRoutes from './routes/banner.routes';
@@ -14,6 +15,9 @@ import sekretariatRoutes from './routes/sekretariat.routes';
 import bamusRoutes from './routes/bamus.routes';
 import bapemperdaRoutes from './routes/bapemperda.routes';
 import banggarRoutes from './routes/banggar.routes';
+import bkRoutes from './routes/bk.routes';
+import komisiRoutes from './routes/komisi.routes';
+import fraksiRoutes from './routes/fraksi.routes';
 import { errorHandler } from './middleware/error.middleware';
 
 const app = express();
@@ -28,6 +32,9 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve uploaded files statically
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 // Routes
 import adminRoutes from './routes/admin.routes';
@@ -44,6 +51,9 @@ app.use('/api/sekretariat', sekretariatRoutes);
 app.use('/api/bamus', bamusRoutes);
 app.use('/api/bapemperda', bapemperdaRoutes);
 app.use('/api/banggar', banggarRoutes);
+app.use('/api/bk', bkRoutes);
+app.use('/api/komisi', komisiRoutes);
+app.use('/api/fraksi', fraksiRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {

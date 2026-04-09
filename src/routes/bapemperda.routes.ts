@@ -17,7 +17,7 @@ const router = Router();
 
 // ── BapemperdaInfo ──
 router.get('/info', getBapemperdaInfo);
-router.get('/info/all', authMiddleware, getAllBapemperdaInfo);
+router.get('/info/all', getAllBapemperdaInfo);
 router.post('/info', authMiddleware, createBapemperdaInfo);
 router.put('/info/:id', authMiddleware, updateBapemperdaInfo);
 router.delete('/info/:id', authMiddleware, deleteBapemperdaInfo);

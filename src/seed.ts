@@ -58,20 +58,137 @@ async function main() {
     }
   ];
 
-  for (const b of beritas) {
-    await prisma.berita.upsert({
-      where: { slug: b.slug },
-      update: {},
-      create: b
+  // --- SEED MASA JABATAN ---
+  const mj2024 = await prisma.masaJabatan.upsert({
+    where: { periode: '2024-2029' },
+    update: {},
+    create: {
+      periode: '2024-2029',
+      tahunMulai: 2024,
+      tahunSelesai: 2029,
+      isAktif: true,
+      order: 1
+    }
+  });
+
+  // --- SEED FRAKSI ---
+  const fraksiData = [
+    {
+      slug: 'gerindra',
+      name: 'Fraksi Partai Gerakan Indonesia Raya',
+      shortName: 'Gerindra',
+      kursi: 6,
+      color: '#c8102e',
+      masaJabatanId: mj2024.id,
+      deskripsi: 'Fraksi Partai Gerindra DPRD Kabupaten Sumbawa Barat periode 2024-2029.',
+      order: 1,
+      anggota: [
+        { name: 'H. Abidin, S.Pd.', jabatan: 'Ketua Fraksi', order: 1 },
+        { name: 'Mustafa, S.H.', jabatan: 'Wakil Ketua', order: 2 },
+        { name: 'Hj. Syarifah', jabatan: 'Sekretaris', order: 3 },
+        { name: 'Ziaul Haq', jabatan: 'Anggota', order: 4 },
+        { name: 'Bambang Sudarmanto', jabatan: 'Anggota', order: 5 },
+        { name: 'Arifin', jabatan: 'Anggota', order: 6 },
+      ]
+    },
+    {
+      slug: 'golkar',
+      name: 'Fraksi Partai Golongan Karya',
+      shortName: 'Golkar',
+      kursi: 5,
+      color: '#f5c518',
+      masaJabatanId: mj2024.id,
+      deskripsi: 'Fraksi Partai Golkar DPRD Kabupaten Sumbawa Barat periode 2024-2029.',
+      order: 2,
+      anggota: [
+        { name: 'H. Thamrin, S.E.', jabatan: 'Ketua Fraksi', order: 1 },
+        { name: 'Sudarsih', jabatan: 'Sekretaris', order: 2 },
+        { name: 'H. Mancawari', jabatan: 'Anggota', order: 3 },
+      ]
+    },
+    {
+      slug: 'pkb',
+      name: 'Fraksi Partai Kebangkitan Bangsa',
+      shortName: 'PKB',
+      kursi: 4,
+      color: '#006b3f',
+      masaJabatanId: mj2024.id,
+      order: 3,
+      anggota: [
+        { name: 'K.H. Syamsul Ismain', jabatan: 'Ketua Fraksi', order: 1 },
+      ]
+    },
+    {
+      slug: 'nasdem',
+      name: 'Fraksi Partai NasDem',
+      shortName: 'NasDem',
+      kursi: 4,
+      color: '#1b3a6b',
+      masaJabatanId: mj2024.id,
+      order: 4,
+      anggota: []
+    },
+    {
+      slug: 'pks',
+      name: 'Fraksi Partai Keadilan Sejahtera',
+      shortName: 'PKS',
+      kursi: 3,
+      color: '#ff6600',
+      masaJabatanId: mj2024.id,
+      order: 5,
+      anggota: []
+    },
+    {
+      slug: 'demokrat',
+      name: 'Fraksi Partai Demokrat',
+      shortName: 'Demokrat',
+      kursi: 3,
+      color: '#003580',
+      masaJabatanId: mj2024.id,
+      order: 6,
+      anggota: []
+    }
+  ];
+
+  for (const f of fraksiData) {
+    const { anggota, ...info } = f;
+    let fraksi = await prisma.fraksiInfo.findFirst({ where: { slug: f.slug } });
+    if (fraksi) {
+      fraksi = await prisma.fraksiInfo.update({
+        where: { id: fraksi.id },
+        data: info,
+      });
+    } else {
+      fraksi = await prisma.fraksiInfo.create({
+        data: info,
+      });
+    }
+
+    // Seed anggota if none exist for this fraksi
+    const existingAnggotaCount = await prisma.anggotaFraksi.count({
+      where: { fraksiInfoId: fraksi.id }
     });
+
+    if (existingAnggotaCount === 0) {
+      for (const a of anggota) {
+        await prisma.anggotaFraksi.create({
+          data: {
+            ...a,
+            fraksiInfoId: fraksi.id,
+          }
+        });
+      }
+    }
   }
 
   console.log(`✅ Admin seeded: ${admin.username}`);
   console.log(`   Username: ${username}`);
   console.log(`   Password: ${password}`);
   console.log(`✅ Berita seeded: ${beritas.length} articles`);
+  console.log(`✅ Fraksi seeded: ${fraksiData.length} groups`);
 }
 
 main()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

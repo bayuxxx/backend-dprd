@@ -4,14 +4,13 @@ import { AuthRequest } from '../middleware/auth.middleware';
 import { uploadToStorage, deleteFromStorage } from '../lib/storage';
 
 // ══════════════════════════════════════════════
-// BapemperdaInfo (description + masa jabatan)
+// BadanKehormatanInfo (description + masa jabatan)
 // ══════════════════════════════════════════════
 
-/** GET /api/bapemperda/info — public, returns active info with all members */
-export const getBapemperdaInfo = async (req: Request, res: Response) => {
+export const getBKInfo = async (req: Request, res: Response) => {
   const { id } = req.query;
   const where = id ? { id: String(id) } : { isAktif: true };
-  const info = await prisma.bapemperdaInfo.findFirst({
+  const info = await prisma.badanKehormatanInfo.findFirst({
     where,
     include: {
       anggota: { orderBy: { order: 'asc' } },
@@ -20,17 +19,15 @@ export const getBapemperdaInfo = async (req: Request, res: Response) => {
   res.json(info);
 };
 
-/** GET /api/bapemperda/info/all — admin, returns all records */
-export const getAllBapemperdaInfo = async (_req: Request, res: Response) => {
-  const list = await prisma.bapemperdaInfo.findMany({
+export const getAllBKInfo = async (_req: Request, res: Response) => {
+  const list = await prisma.badanKehormatanInfo.findMany({
     orderBy: { createdAt: 'desc' },
     include: { anggota: { orderBy: { order: 'asc' } } },
   });
   res.json(list);
 };
 
-/** POST /api/bapemperda/info — admin */
-export const createBapemperdaInfo = async (req: AuthRequest, res: Response) => {
+export const createBKInfo = async (req: AuthRequest, res: Response) => {
   const { masaJabatan, deskripsi, isAktif } = req.body;
 
   if (!masaJabatan) {
@@ -39,10 +36,10 @@ export const createBapemperdaInfo = async (req: AuthRequest, res: Response) => {
   }
 
   if (isAktif === true || isAktif === 'true') {
-    await prisma.bapemperdaInfo.updateMany({ data: { isAktif: false } });
+    await prisma.badanKehormatanInfo.updateMany({ data: { isAktif: false } });
   }
 
-  const info = await prisma.bapemperdaInfo.create({
+  const info = await prisma.badanKehormatanInfo.create({
     data: {
       masaJabatan,
       deskripsi: deskripsi || null,
@@ -53,21 +50,20 @@ export const createBapemperdaInfo = async (req: AuthRequest, res: Response) => {
   res.status(201).json(info);
 };
 
-/** PUT /api/bapemperda/info/:id — admin */
-export const updateBapemperdaInfo = async (req: AuthRequest, res: Response) => {
-  const existing = await prisma.bapemperdaInfo.findUnique({ where: { id: String(req.params.id) } });
+export const updateBKInfo = async (req: AuthRequest, res: Response) => {
+  const existing = await prisma.badanKehormatanInfo.findUnique({ where: { id: String(req.params.id) } });
   if (!existing) {
-    res.status(404).json({ message: 'Bapemperda info tidak ditemukan.' });
+    res.status(404).json({ message: 'Badan Kehormatan info tidak ditemukan.' });
     return;
   }
 
   const { masaJabatan, deskripsi, isAktif } = req.body;
 
   if ((isAktif === true || isAktif === 'true') && !existing.isAktif) {
-    await prisma.bapemperdaInfo.updateMany({ data: { isAktif: false } });
+    await prisma.badanKehormatanInfo.updateMany({ data: { isAktif: false } });
   }
 
-  const updated = await prisma.bapemperdaInfo.update({
+  const updated = await prisma.badanKehormatanInfo.update({
     where: { id: String(req.params.id) },
     data: {
       masaJabatan: masaJabatan ?? existing.masaJabatan,
@@ -79,14 +75,13 @@ export const updateBapemperdaInfo = async (req: AuthRequest, res: Response) => {
   res.json(updated);
 };
 
-/** DELETE /api/bapemperda/info/:id — admin */
-export const deleteBapemperdaInfo = async (req: AuthRequest, res: Response) => {
-  const existing = await prisma.bapemperdaInfo.findUnique({
+export const deleteBKInfo = async (req: AuthRequest, res: Response) => {
+  const existing = await prisma.badanKehormatanInfo.findUnique({
     where: { id: String(req.params.id) },
     include: { anggota: true },
   });
   if (!existing) {
-    res.status(404).json({ message: 'Bapemperda info tidak ditemukan.' });
+    res.status(404).json({ message: 'Badan Kehormatan info tidak ditemukan.' });
     return;
   }
 
@@ -94,32 +89,30 @@ export const deleteBapemperdaInfo = async (req: AuthRequest, res: Response) => {
     if (anggota.imageUrl) await deleteFromStorage(anggota.imageUrl);
   }
 
-  await prisma.anggotaBapemperda.deleteMany({ where: { bapemperdaInfoId: String(req.params.id) } });
-  await prisma.bapemperdaInfo.delete({ where: { id: String(req.params.id) } });
-  res.json({ message: 'Bapemperda info berhasil dihapus.' });
+  await prisma.anggotaBadanKehormatan.deleteMany({ where: { bkInfoId: String(req.params.id) } });
+  await prisma.badanKehormatanInfo.delete({ where: { id: String(req.params.id) } });
+  res.json({ message: 'Badan Kehormatan info berhasil dihapus.' });
 };
 
 // ══════════════════════════════════════════════
-// AnggotaBapemperda (members)
+// AnggotaBadanKehormatan (members)
 // ══════════════════════════════════════════════
 
-/** GET /api/bapemperda/anggota — public */
-export const getAnggotaBapemperda = async (req: Request, res: Response) => {
-  const { bapemperdaInfoId } = req.query;
+export const getAnggotaBK = async (req: Request, res: Response) => {
+  const { bkInfoId } = req.query;
   const where: Record<string, unknown> = {};
-  if (bapemperdaInfoId) where.bapemperdaInfoId = String(bapemperdaInfoId);
+  if (bkInfoId) where.bkInfoId = String(bkInfoId);
 
-  const anggota = await prisma.anggotaBapemperda.findMany({
+  const anggota = await prisma.anggotaBadanKehormatan.findMany({
     where,
     orderBy: { order: 'asc' },
-    include: { bapemperdaInfo: true },
+    include: { bkInfo: true },
   });
   res.json(anggota);
 };
 
-/** POST /api/bapemperda/anggota — admin */
-export const createAnggotaBapemperda = async (req: AuthRequest, res: Response) => {
-  const { name, jabatan, faction, order, bapemperdaInfoId } = req.body;
+export const createAnggotaBK = async (req: AuthRequest, res: Response) => {
+  const { name, jabatan, faction, order, bkInfoId } = req.body;
 
   if (!name || !jabatan) {
     res.status(400).json({ message: 'Nama dan jabatan diperlukan.' });
@@ -132,33 +125,32 @@ export const createAnggotaBapemperda = async (req: AuthRequest, res: Response) =
       req.file.buffer,
       req.file.originalname,
       req.file.mimetype,
-      'bapemperda'
+      'bk'
     );
   }
 
-  const anggota = await prisma.anggotaBapemperda.create({
+  const anggota = await prisma.anggotaBadanKehormatan.create({
     data: {
       name,
       jabatan,
       faction: faction || null,
       imageUrl,
       order: order ? parseInt(order) : 0,
-      bapemperdaInfoId: bapemperdaInfoId || null,
+      bkInfoId: bkInfoId || null,
     },
-    include: { bapemperdaInfo: true },
+    include: { bkInfo: true },
   });
   res.status(201).json(anggota);
 };
 
-/** PUT /api/bapemperda/anggota/:id — admin */
-export const updateAnggotaBapemperda = async (req: AuthRequest, res: Response) => {
-  const existing = await prisma.anggotaBapemperda.findUnique({ where: { id: String(req.params.id) } });
+export const updateAnggotaBK = async (req: AuthRequest, res: Response) => {
+  const existing = await prisma.anggotaBadanKehormatan.findUnique({ where: { id: String(req.params.id) } });
   if (!existing) {
-    res.status(404).json({ message: 'Anggota bapemperda tidak ditemukan.' });
+    res.status(404).json({ message: 'Anggota Badan Kehormatan tidak ditemukan.' });
     return;
   }
 
-  const { name, jabatan, faction, order, bapemperdaInfoId } = req.body;
+  const { name, jabatan, faction, order, bkInfoId } = req.body;
 
   let imageUrl = existing.imageUrl;
   if (req.file) {
@@ -167,11 +159,11 @@ export const updateAnggotaBapemperda = async (req: AuthRequest, res: Response) =
       req.file.buffer,
       req.file.originalname,
       req.file.mimetype,
-      'bapemperda'
+      'bk'
     );
   }
 
-  const updated = await prisma.anggotaBapemperda.update({
+  const updated = await prisma.anggotaBadanKehormatan.update({
     where: { id: String(req.params.id) },
     data: {
       name: name || existing.name,
@@ -179,22 +171,21 @@ export const updateAnggotaBapemperda = async (req: AuthRequest, res: Response) =
       faction: faction !== undefined ? faction : existing.faction,
       imageUrl,
       order: order !== undefined ? parseInt(order) : existing.order,
-      bapemperdaInfoId: bapemperdaInfoId !== undefined ? (bapemperdaInfoId || null) : existing.bapemperdaInfoId,
+      bkInfoId: bkInfoId !== undefined ? (bkInfoId || null) : existing.bkInfoId,
     },
-    include: { bapemperdaInfo: true },
+    include: { bkInfo: true },
   });
   res.json(updated);
 };
 
-/** DELETE /api/bapemperda/anggota/:id — admin */
-export const deleteAnggotaBapemperda = async (req: AuthRequest, res: Response) => {
-  const existing = await prisma.anggotaBapemperda.findUnique({ where: { id: String(req.params.id) } });
+export const deleteAnggotaBK = async (req: AuthRequest, res: Response) => {
+  const existing = await prisma.anggotaBadanKehormatan.findUnique({ where: { id: String(req.params.id) } });
   if (!existing) {
-    res.status(404).json({ message: 'Anggota bapemperda tidak ditemukan.' });
+    res.status(404).json({ message: 'Anggota Badan Kehormatan tidak ditemukan.' });
     return;
   }
 
   if (existing.imageUrl) await deleteFromStorage(existing.imageUrl);
-  await prisma.anggotaBapemperda.delete({ where: { id: String(req.params.id) } });
-  res.json({ message: 'Anggota bapemperda berhasil dihapus.' });
+  await prisma.anggotaBadanKehormatan.delete({ where: { id: String(req.params.id) } });
+  res.json({ message: 'Anggota Badan Kehormatan berhasil dihapus.' });
 };

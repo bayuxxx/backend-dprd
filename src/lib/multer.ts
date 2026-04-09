@@ -1,6 +1,6 @@
 import multer from 'multer';
 
-// Store in memory so we can upload to Supabase Storage
+// Store in memory — we'll write to disk manually via storage.ts
 const storage = multer.memoryStorage();
 
 export const upload = multer({

@@ -1,16 +1,18 @@
 import { Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import { AuthRequest } from '../middleware/auth.middleware';
-import { uploadToStorage, deleteFromStorage } from '../lib/supabase';
+import { uploadToStorage, deleteFromStorage } from '../lib/storage';
 
 // ══════════════════════════════════════════════
 // BanggarInfo (description + masa jabatan)
 // ══════════════════════════════════════════════
 
 /** GET /api/banggar/info — public, returns active info with all members */
-export const getBanggarInfo = async (_req: Request, res: Response) => {
+export const getBanggarInfo = async (req: Request, res: Response) => {
+  const { id } = req.query;
+  const where = id ? { id: String(id) } : { isAktif: true };
   const info = await prisma.banggarInfo.findFirst({
-    where: { isAktif: true },
+    where,
     include: {
       anggota: { orderBy: { order: 'asc' } },
     },

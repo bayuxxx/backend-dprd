@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import { AuthRequest } from '../middleware/auth.middleware';
-import { uploadToStorage, deleteFromStorage } from '../lib/supabase';
+import { uploadToStorage, deleteFromStorage } from '../lib/storage';
 
 // Helper: generate slug from title
 function generateSlug(title: string): string {

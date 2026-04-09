@@ -19,7 +19,7 @@ const router = Router();
 // GET /api/bamus/info - public (active only)
 router.get('/info', getBamusInfo);
 // GET /api/bamus/info/all - admin (all)
-router.get('/info/all', authMiddleware, getAllBamusInfo);
+router.get('/info/all', getAllBamusInfo);
 // POST /api/bamus/info - admin
 router.post('/info', authMiddleware, createBamusInfo);
 // PUT /api/bamus/info/:id - admin

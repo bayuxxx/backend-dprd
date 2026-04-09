@@ -17,7 +17,7 @@ const router = Router();
 
 // ── BanggarInfo ──
 router.get('/info', getBanggarInfo);
-router.get('/info/all', authMiddleware, getAllBanggarInfo);
+router.get('/info/all', getAllBanggarInfo);
 router.post('/info', authMiddleware, createBanggarInfo);
 router.put('/info/:id', authMiddleware, updateBanggarInfo);
 router.delete('/info/:id', authMiddleware, deleteBanggarInfo);
